@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vocabulary Trainer - Unit 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { 
+      font-family: 'DM Sans', 'Segoe UI', Arial, sans-serif; 
+      background: #F6F1E8; 
+      margin: 0; 
+      padding: 20px;
+      color: #1F2421;
+    }
+    .container { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      background: #FBF7EF; 
+      border-radius: 16px; 
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+      padding: 40px;
+      position: relative;
+    }
+    h1 { 
+      text-align: center; 
+      color: #2A2723;
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+    }
+    .subtitle {
+      text-align: center;
+      color: #8A8A80;
+      font-size: 16px;
+      margin-bottom: 40px;
+    }
+    
+    /* Main Menu Screen */
+    .main-menu-screen {
+      display: block;
+    }
+    .main-menu-screen.hide { display: none; }
+    
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .category-card {
+      background: #FFFFFF;
+      border: 2px solid #E2D9C8;
+      border-radius: 12px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .category-card:hover {
+      border-color: #C8853F;
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(200, 133, 63, 0.15);
+    }
+    .category-card:active {
+      transform: translateY(-2px);
+    }
+    .category-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      display: block;
+    }
+    .category-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2A2723;
+      margin-bottom: 8px;
+    }
+    .category-count {
+      font-size: 14px;
+      color: #8A8A80;
+    }
+    
+    .finish-btn {
+      display: block;
+      margin: 30px auto 0;
+      padding: 14px 40px;
+      background: #2A2723;
+      color: #FBF7EF;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .finish-btn:hover {
+      background: #C8853F;
+      transform: scale(1.05);
+    }
+    
+    /* Category View */
+    .category-view {
+      display: none;
+    }
+    .category-view.active { display: block; }
+    
+    .back-nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #E2D9C8;
+    }
+    .back-btn {
+      padding: 10px 20px;
+      background: #F0E3D0;
+      color: #2A2723;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-btn:hover {
+      background: #C8853F;
+      color: #FFFFFF;
+    }
+    .category-header {
+      flex: 1;
+      font-size: 24px;
+      font-weight: 700;
+      color: #2A2723;
+    }
+    
+    /* Mini Menu */
+    .mini-menu { 
+      display: flex; 
+      gap: 12px; 
+      flex-wrap: wrap; 
+      justify-content: center; 
+      margin-bottom: 25px;
+    }
+    .mini-btn { 
+      font-size: 16px; 
+      padding: 10px 20px; 
+      border: 2px solid #E2D9C8; 
+      border-radius: 8px; 
+      background: #FFFFFF;
+      cursor: pointer; 
+      color: #2A2723;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .mini-btn.active, .mini-btn:hover { 
+      background: #C8853F; 
+      color: #FFFFFF;
+      border-color: #C8853F;
+    }
+    
+    /* Cards */
+    .cards, .task-area-wrapper { margin-top: 20px; }
+    .card-container { 
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+    }
+    .card { 
+      background: linear-gradient(135deg, #F0E3D0 0%, #F6F1E8 100%);
+      color: #2A2723; 
+      border: 2px solid #E2D9C8;
+      border-radius: 10px; 
+      padding: 20px 15px; 
+      display: flex;
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center; 
+      font-size: 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      min-height: 100px;
+      font-weight: 500;
+      position: relative;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(200, 133, 63, 0.2);
+      border-color: #C8853F;
+    }
+    .card-audio {
+      margin-top: 8px;
+      font-size: 24px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .card:hover .card-audio {
+      opacity: 1;
+    }
+    .card-hint {
+      text-align: center;
+      color: #8A8A80;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    
+    .hide { display: none; }
+    
+    /* Drag & Drop */
+    .drag-item, .drop-zone { 
+      background: #FFFFFF;
+      border: 2px solid #E2D9C8; 
+      padding: 12px 15px; 
+      border-radius: 8px; 
+      margin: 5px; 
+      cursor: move; 
+      font-size: 16px; 
+      display: inline-block; 
+      user-select: none;
+      transition: all 0.3s;
+    }
+    .drag-item:hover {
+      border-color: #C8853F;
+      transform: scale(1.02);
+    }
+    .drag-item.used {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    .drop-zone { 
+      background: #F0E3D0;
+      min-width: 120px;
+      cursor: pointer;
+    }
+    .correct { 
+      background: #b2f9b9 !important;
+      border-color: #4CAF50 !important;
+    }
+    .incorrect { 
+      background: #ffbeb7 !important;
+      border-color: #f44336 !important;
+      animation: shake 0.5s;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    
+    /* Task Styles */
+    .task { 
+      margin-bottom: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #2A2723;
+    }
+    input[type="text"] {
+      font-size: 17px; 
+      padding: 10px 12px; 
+      border-radius: 8px; 
+      border: 2px solid #E2D9C8; 
+      margin: 8px 4px;
+      transition: border 0.2s;
+      background: #FFFFFF;
+      min-width: 250px;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #C8853F;
+    }
+    
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      background: #C8853F;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin: 4px;
+    }
+    button:hover {
+      background: #A86B2C;
+      transform: translateY(-2px);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .speaking-btn {
+      background: #F0E3D0;
+      color: #2A2723;
+    }
+    .speaking-btn:hover {
+      background: #C8853F;
+      color: #FFFFFF;
+    }
+    
+    .result { 
+      font-weight: bold; 
+      margin: 10px; 
+      font-size: 18px;
+      display: block;
+    }
+    
+    .match-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .match-column {
+      flex: 1;
+      min-width: 200px;
+    }
+    .match-column b {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #2A2723;
+    }
+    
+    .task-note {
+      font-size: 14px;
+      color: #8A8A80;
+      margin-top: 15px;
+      font-style: italic;
+    }
+
+    .speaking-question {
+      background: #FFFFFF;
+      border: 2px solid #E2D9C8;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    
+    @media(max-width: 650px) {
+      .container { padding: 20px; }
+      h1 { font-size: 24px; }
+      .category-grid { grid-template-columns: 1fr; }
+      .mini-btn { font-size: 14px; padding: 8px 14px; }
+      .card { font-size: 14px; padding: 15px 10px; }
+      input[type="text"] { min-width: 200px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Main Menu Screen -->
+  <div class="main-menu-screen" id="mainMenuScreen">
+    <h1>🎓 Unit 1 Vocabulary Trainer</h1>
+    <p class="subtitle">Choose a category to start learning</p>
+    
+    <div class="category-grid">
+      <div class="category-card" onclick="openCategory(0)">
+        <span class="category-icon">⏰</span>
+        <div class="category-title">Everyday Activities</div>
+        <div class="category-count">17 phrases</div>
+      </div>
+      
+      <div class="category-card" onclick="openCategory(1)">
+        <span class="category-icon">🎮</span>
+        <div class="category-title">Free-time Activities</div>
+        <div class="category-count">14 phrases</div>
+      </div>
+      
+      <div class="category-card" onclick="openCategory(2)">
+        <span class="category-icon">📚</span>
+        <div class="category-title">Reading (useful words)</div>
+        <div class="category-count">7 phrases</div>
+      </div>
+    </div>
+    
+    <button class="finish-btn" onclick="finishTraining()">✅ Finish Training</button>
+  </div>
+
+  <!-- Category Views -->
+  
+  <!-- Everyday Activities -->
+  <div class="category-view" id="category0">
+    <div class="back-nav">
+      <button class="back-btn" onclick="backToMenu()">← Back to Menu</button>
+      <div class="category-header">⏰ Everyday Activities</div>
+    </div>
+    <div class="mini-menu">
+      <button class="mini-btn active" onclick="showEA('flash')">Flashcards</button>
+      <button class="mini-btn" onclick="showEA('match')">Matching</button>
+      <button class="mini-btn" onclick="showEA('spell')">Spelling</button>
+      <button class="mini-btn" onclick="showEA('fill')">Fill the gap</button>
+      <button class="mini-btn" onclick="showEA('speak')">Speaking</button>
+    </div>
+    <div id="ea-flash" class="cards"></div>
+    <div id="ea-match" class="cards hide"></div>
+    <div id="ea-spell" class="cards hide"></div>
+    <div id="ea-fill" class="cards hide"></div>
+    <div id="ea-speak" class="cards hide"></div>
+  </div>
+
+  <!-- Free-time Activities -->
+  <div class="category-view" id="category1">
+    <div class="back-nav">
+      <button class="back-btn" onclick="backToMenu()">← Back to Menu</button>
+      <div class="category-header">🎮 Free-time Activities</div>
+    </div>
+    <div class="mini-menu">
+      <button class="mini-btn active" onclick="showFA('flash')">Flashcards</button>
+      <button class="mini-btn" onclick="showFA('match')">Matching</button>
+      <button class="mini-btn" onclick="showFA('spell')">Spelling</button>
+      <button class="mini-btn" onclick="showFA('fill')">Fill the gap</button>
+      <button class="mini-btn" onclick="showFA('speak')">Speaking</button>
+    </div>
+    <div id="fa-flash" class="cards"></div>
+    <div id="fa-match" class="cards hide"></div>
+    <div id="fa-spell" class="cards hide"></div>
+    <div id="fa-fill" class="cards hide"></div>
+    <div id="fa-speak" class="cards hide"></div>
+  </div>
+
+  <!-- Reading -->
+  <div class="category-view" id="category2">
+    <div class="back-nav">
+      <button class="back-btn" onclick="backToMenu()">← Back to Menu</button>
+      <div class="category-header">📚 Reading (useful words)</div>
+    </div>
+    <div class="mini-menu">
+      <button class="mini-btn active" onclick="showRD('flash')">Flashcards</button>
+      <button class="mini-btn" onclick="showRD('match')">Matching</button>
+      <button class="mini-btn" onclick="showRD('spell')">Spelling</button>
+      <button class="mini-btn" onclick="showRD('fill')">Fill the gap</button>
+      <button class="mini-btn" onclick="showRD('speak')">Speaking</button>
+    </div>
+    <div id="rd-flash" class="cards"></div>
+    <div id="rd-match" class="cards hide"></div>
+    <div id="rd-spell" class="cards hide"></div>
+    <div id="rd-fill" class="cards hide"></div>
+    <div id="rd-speak" class="cards hide"></div>
+  </div>
+
+</div>
+
+<script>
+// === Data ===
+const everyday = [
+  ["brush your teeth", "чистить зубы"],
+  ["do homework", "делать домашнее задание"],
+  ["finish school", "заканчивать школу"],
+  ["get dressed", "одеваться"],
+  ["get up", "вставать"],
+  ["go home", "идти домой"],
+  ["go on social media", "сидеть в соцсетях"],
+  ["go to bed", "ложиться спать"],
+  ["go to school (by bike/bus/car/train/on foot)", "идти/ехать в школу (на велосипеде/автобусе/машине/поезде/пешком)"],
+  ["have a shower", "принимать душ"],
+  ["have breakfast", "завтракать"],
+  ["have dinner", "ужинать"],
+  ["have lunch", "обедать"],
+  ["leave home", "уходить из дома"],
+  ["pack your school bag", "собирать портфель"],
+  ["start school", "начинать уроки"],
+  ["wake up", "просыпаться"]
+];
+
+const freetime = [
+  ["chat online", "чатиться онлайн"],
+  ["dance", "танцевать"],
+  ["do exercise", "делать упражнения"],
+  ["do sport", "заниматься спортом"],
+  ["draw", "рисовать"],
+  ["go shopping", "ходить по магазинам"],
+  ["hang out with friends", "гулять с друзьями"],
+  ["listen to music", "слушать музыку"],
+  ["play an instrument", "играть на инструменте"],
+  ["play board games", "играть в настольные игры"],
+  ["play computer games", "играть в компьютерные игры"],
+  ["read", "читать"],
+  ["take photos", "фотографировать"],
+  ["watch films", "смотреть фильмы"]
+];
+
+const reading = [
+  ["in different ways", "другими способами"],
+  ["in their own way", "по-своему"],
+  ["gentle", "нежный, легкий"],
+  ["feel happy and calm", "чувствовать себя счастливым и спокойным"],
+  ["creative", "креативный, изобретательный"],
+  ["confident", "уверенный"],
+  ["feel free", "чувствовать себя свободным"]
+];
+
+// === ВОПРОСЫ ДЛЯ SPEAKING ===
+const speakingQuestions = {
+  everyday: [
+    "What time do you usually wake up on weekdays? Describe your morning routine.",
+    "How do you go to school? Describe your journey.",
+    "What do you do after school? Talk about your afternoon activities.",
+    "Describe what you do before going to bed.",
+    "What's your favorite meal of the day and what do you usually eat?"
+  ],
+  freetime: [
+    "What hobbies do you have? How much time do you spend on them each week?",
+    "Do you prefer playing computer games or board games? Why?",
+    "What's the last film you watched? Would you recommend it to your friends?",
+    "How often do you hang out with friends? What do you usually do together?",
+    "Can you play any musical instrument? If yes, which one? If no, would you like to learn?",
+    "Do you like drawing or taking photos? Which one is more interesting for you and why?",
+    "What kind of sport or exercise do you do? How does it make you feel?"
+  ],
+  reading: [
+    "When do you feel most creative? What do you usually do in those moments?",
+    "What makes you feel confident when speaking English?",
+    "Describe a moment when you felt completely free. What were you doing?",
+    "How do you express your feelings in different ways? Give examples.",
+    "What's your own way of dealing with stress or difficult situations?",
+    "Do you think it's important to feel calm every day? Why or why not?",
+    "What gentle activities help you relax after a long day?"
+  ]
+};
+
+// === Navigation ===
+function openCategory(n) {
+  document.getElementById('mainMenuScreen').classList.add('hide');
+  document.querySelectorAll('.category-view').forEach((v, i) => {
+    v.classList.toggle('active', i === n);
+  });
+  if(n===0) showEA('flash');
+  if(n===1) showFA('flash');
+  if(n===2) showRD('flash');
+}
+
+function backToMenu() {
+  document.getElementById('mainMenuScreen').classList.remove('hide');
+  document.querySelectorAll('.category-view').forEach(v => v.classList.remove('active'));
+}
+
+function finishTraining() {
+  if(confirm('Are you sure you want to finish your training session?')) {
+    alert('Great job! 🎉 Keep practicing to improve your vocabulary!');
+  }
+}
+
+// === Mini-menus ===
+function showEA(tab) {
+  ['flash','match','spell','fill','speak'].forEach(id => {
+    document.getElementById('ea-'+id).classList.toggle('hide', id!==tab);
+  });
+  document.querySelectorAll('#category0 .mini-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase().includes(tab));
+  });
+}
+function showFA(tab) {
+  ['flash','match','spell','fill','speak'].forEach(id => {
+    document.getElementById('fa-'+id).classList.toggle('hide', id!==tab);
+  });
+  document.querySelectorAll('#category1 .mini-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase().includes(tab));
+  });
+}
+function showRD(tab) {
+  ['flash','match','spell','fill','speak'].forEach(id => {
+    document.getElementById('rd-'+id).classList.toggle('hide', id!==tab);
+  });
+  document.querySelectorAll('#category2 .mini-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase().includes(tab));
+  });
+}
+
+// === FLASHCARDS (Russian on front, English on back with audio) ===
+function createFlash(id, arr) {
+  let out = '<div class="card-container">';
+  arr.forEach((val, idx) => {
+    out += `<div class="card" data-en="${val[0].replace(/"/g, '&quot;')}" data-ru="${val[1].replace(/"/g, '&quot;')}" data-state="ru" onclick="flipCard(this, ${idx})">
+      <div>${val[1]}</div>
+    </div>`;
+  });
+  out += '</div><div class="card-hint">👆 Click on a card to see the English translation</div>';
+  document.getElementById(id).innerHTML = out;
+}
+
+function flipCard(card, idx) {
+  const state = card.getAttribute('data-state');
+  const en = card.getAttribute('data-en');
+  const ru = card.getAttribute('data-ru');
+  
+  if (state === 'ru') {
+    card.innerHTML = `<div>${en}</div><div class="card-audio" onclick="event.stopPropagation(); speakWord('${en.replace(/'/g, "\\'")}')">🔊</div>`;
+    card.setAttribute('data-state', 'en');
+  } else {
+    card.innerHTML = `<div>${ru}</div>`;
+    card.setAttribute('data-state', 'ru');
+  }
+}
+
+createFlash('ea-flash', everyday);
+createFlash('fa-flash', freetime);
+createFlash('rd-flash', reading);
+
+// === MATCHING (with auto-return on incorrect) ===
+function shuffle(array) {
+  let arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function createMatch(id, arr) {
+  let q = shuffle(arr), a = shuffle(arr);
+  let out = '<div class="task">Drag English words to matching Russian translations</div><div class="match-container">';
+  out += '<div class="match-column"><b>ENGLISH</b>';
+  q.forEach((v,i) => { 
+    out += `<div draggable="true" class="drag-item" id="${id}-drag${i}" data-text="${v[0]}" ondragstart="drag(event)">${v[0]}</div>`; 
+  });
+  out += '</div><div class="match-column"><b>RUSSIAN</b>';
+  a.forEach((v,i) => { 
+    out += `<div class="drop-zone" id="${id}-drop${i}" data-correct="${v[0]}" ondragover="allowDrop(event)" ondrop="drop(event,this,'${id}')">${v[1]}</div>`; 
+  });
+  out += '</div></div><button onclick="createMatch(\''+id+'\', '+(id[0]==='e'?'everyday':id[0]==='f'?'freetime':'reading')+')">🔄 Shuffle</button>';
+  document.getElementById(id).innerHTML = out;
+}
+
+window.drag_item = null;
+
+function drag(e) { 
+  window.drag_item = e.target; 
+}
+
+function allowDrop(e) {
+  e.preventDefault();
+}
+
+function drop(e, targ, id) {
+  e.preventDefault();
+  if(!window.drag_item) return;
+  
+  const draggedText = window.drag_item.getAttribute('data-text');
+  const correctText = targ.getAttribute('data-correct');
+  
+  targ.textContent = draggedText;
+  
+  if(draggedText === correctText) {
+    targ.classList.add('correct');
+    targ.classList.remove('incorrect');
+    window.drag_item.classList.add('used');
+  } else {
+    targ.classList.add('incorrect');
+    targ.classList.remove('correct');
+    
+    // Auto-return after 800ms
+    setTimeout(() => {
+      targ.textContent = targ.getAttribute('data-correct');
+      const ruText = getRussianTranslation(correctText, id);
+      targ.textContent = ruText;
+      targ.classList.remove('incorrect');
+    }, 800);
+  }
+  
+  window.drag_item = null;
+}
+
+function getRussianTranslation(enText, id) {
+  let arr = id.includes('ea') ? everyday : id.includes('fa') ? freetime : reading;
+  for(let i = 0; i < arr.length; i++) {
+    if(arr[i][0] === enText) return arr[i][1];
+  }
+  return '';
+}
+
+createMatch('ea-match', everyday);
+createMatch('fa-match', freetime);
+createMatch('rd-match', reading);
+
+// === SPELLING (ИСПРАВЛЕНО: Объект слов для каждой секции отдельно!) ===
+let currentSpellWords = {};
+
+function createSpell(id, arr) {
+  let idx = Math.floor(Math.random() * arr.length);
+  let curr = arr[idx][0], currRu = arr[idx][1];
+  let currClean = curr.replace(/ *\([^)]*\) */g, '').trim().toLowerCase();
+  
+  // Сохраняем правильное слово ИМЕННО ДЛЯ ЭТОЙ секции id (ea-spell, fa-spell, rd-spell)
+  currentSpellWords[id] = currClean;
+  
+  let speakBtn = `<button onclick="spellNext('${id}')">➡️ Next word</button>`;
+  document.getElementById(id).innerHTML = 
+    `<div class="task">Translate this phrase: <b>${currRu}</b></div>
+    <div><input id="${id}-input" type="text" placeholder="Type in English..." autocomplete="off" onkeypress="if(event.key==='Enter') chkSpell('${id}')"></div>
+    <button onclick="chkSpell('${id}')">✓ Check</button> ${speakBtn}
+    <button class="speaking-btn" onclick="speakWord('${currClean.replace(/'/g, "\\'")}')">🔊 Listen</button>
+    <div class="result" id="${id}-result"></div>`;
+}
+
+function chkSpell(id) {
+  let inputEl = document.getElementById(id + '-input');
+  let val = inputEl.value.trim().toLowerCase();
+  let resultEl = document.getElementById(id + '-result');
+  let targetWord = currentSpellWords[id];
+  
+  if (val === '') {
+    resultEl.textContent = "⚠️ Please type something!";
+    resultEl.style.color = '#C8853F';
+    return;
+  }
+  
+  if (val === targetWord) {
+    resultEl.textContent = "✅ Correct!";
+    resultEl.style.color = '#4CAF50';
+    inputEl.style.borderColor = '#4CAF50';
+  } else {
+    resultEl.textContent = "❌ Wrong answer. Try again!";
+    resultEl.style.color = '#f44336';
+    inputEl.style.borderColor = '#f44336';
+  }
+}
+
+function spellNext(id) {
+  let arr = id.includes('ea') ? everyday : id.includes('fa') ? freetime : reading;
+  createSpell(id, arr);
+}
+
+createSpell('ea-spell', everyday);
+createSpell('fa-spell', freetime);
+createSpell('rd-spell', reading);
+
+// === FILL THE GAP ===
+let currentFillAnswers = {};
+
+function createFill(id, arr) {
+  let idx = Math.floor(Math.random()*arr.length);
+  let phrase = arr[idx][0];
+  let ru = arr[idx][1];
+  let words = phrase.replace(/ *\([^)]*\) */g, '').split(' ');
+  let toHide = [Math.floor(Math.random()*words.length)];
+  if(words.length > 2 && Math.random() > 0.6) toHide.push((toHide[0]+1) % words.length);
+  
+  currentFillAnswers[id] = { indices: toHide, words: words };
+  
+  let display = words.map((w,i) => toHide.includes(i) ? `<input style="width:${Math.max(50, w.length*11)}px" id="${id}-in${i}">` : w).join(' ');
+  let btn = `<button onclick="chkFill('${id}')">✓ Check</button>
+  <button onclick="fillNext('${id}')">➡️ New phrase</button>`;
+  document.getElementById(id).innerHTML = 
+    `<div class="task">Translate:<br><b>${ru}</b></div>
+    <div class="task-area-wrapper" style="font-size:18px; margin:15px 0;">${display}</div>
+    ${btn} <span id="${id}-out" class="result"></span>`;
+}
+
+function chkFill(id) {
+  const answers = currentFillAnswers[id];
+  if(!answers) return;
+  
+  const idxs = answers.indices;
+  const words = answers.words;
+  let ok = true;
+  
+  for(let k = 0; k < idxs.length; ++k) {
+    let inp = document.getElementById(id+'-in'+idxs[k]);
+    if(!inp) continue;
+    let val = inp.value.trim().toLowerCase();
+    if(val === words[idxs[k]].toLowerCase()) { 
+      inp.style.background = '#bdfac8';
+      inp.style.borderColor = '#4CAF50';
+    } else {
+      inp.style.background = '#ffb1a9'; 
+      inp.style.borderColor = '#f44336';
+      inp.value = words[idxs[k]];
+      ok = false;
+    }
+  }
+  document.getElementById(id+'-out').textContent = ok ? "✅ Correct!" : "❌ Wrong! Correct answers are shown.";
+  document.getElementById(id+'-out').style.color = ok ? '#4CAF50' : '#f44336';
+}
+
+function fillNext(id) {
+  let arr = id.includes('ea') ? everyday : id.includes('fa') ? freetime : reading;
+  createFill(id, arr);
+}
+
+createFill('ea-fill', everyday);
+createFill('fa-fill', freetime);
+createFill('rd-fill', reading);
+
+// === SPEAKING (ИСПРАВЛЕНО: Четкое разделение по категориям) ===
+function createSpeak(id) {
+  let category;
+  if(id === 'ea-speak') category = 'everyday';
+  else if(id === 'fa-speak') category = 'freetime';
+  else if(id === 'rd-speak') category = 'reading';
+  
+  let questions = speakingQuestions[category];
+  let idx = Math.floor(Math.random() * questions.length);
+  let question = questions[idx];
+  
+  document.getElementById(id).innerHTML = 
+    `<div class="task">Speaking Practice</div>
+    <div class="speaking-question">
+      ${question}
+    </div>
+    <div style="text-align:center; margin:20px 0;">
+      <button onclick="createSpeak('${id}')">➡️ Next Question</button>
+    </div>`;
+}
+
+function speakWord(text) {
+  if ('speechSynthesis' in window) {
+    let u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    window.speechSynthesis.speak(u);
+  }
+}
+
+createSpeak('ea-speak');
+createSpeak('fa-speak');
+createSpeak('rd-speak');
+
+</script>
+</body>
+</html>
